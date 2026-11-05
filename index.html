@@ -167,14 +167,19 @@ function save(){try{localStorage.setItem("jb",JSON.stringify(store))}catch(e){}}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 var LOGO='<svg viewBox="0 0 100 100" width="72" height="72" aria-hidden="true"><rect width="100" height="100" rx="22" fill="#0A4545"/><rect x="45" y="16" width="10" height="56" rx="3" fill="#F2B544"/><rect x="29" y="30" width="42" height="10" rx="3" fill="#F2B544"/><path d="M50 72C40 72 30 66 28 56C38 56 48 60 50 72Z" fill="#8FD19E"/><path d="M50 72C60 72 70 66 72 56C62 56 52 60 50 72Z" fill="#8FD19E"/><ellipse cx="50" cy="76" rx="16" ry="3.5" fill="#073232"/></svg>';
 function dayVerse(){var l=[];Object.keys(VERSES).forEach(function(k){VERSES[k].forEach(function(v){if(v[3]&&l.indexOf(v)<0)l.push(v)})});return l.length?l[Math.floor(Date.now()/864e5)%l.length]:null}
+var DEFP=null;
+window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();DEFP=e;if(document.getElementById("k"))home()});
+window.addEventListener("appinstalled",function(){DEFP=null;if(document.getElementById("k"))home()});
 function home(){
   var best=store.best||{},d=dayVerse();
   app.innerHTML='<div class="hero">'+LOGO+'<div><h1>Hitombo</h1><p>Mitombo amin’ny finoana sy ny Teny</p></div></div>'+
   (d?'<div class="vod"><small>Teny androany</small><b>'+d[0]+'</b>'+esc(d[3])+'</div>':'')+
+  (DEFP?'<button class="btn" id="inst">📲 Hametraka ny Hitombo ao amin’ny finday</button>':'')+
   '<button class="big kid" id="k"><b>Ho an\'ny ankizy</b><span>Sary sy fanontaniana mahafinaritra</span></button>'+
   '<button class="big adult" id="a"><b>Ho an\'ny olon-dehibe</b><span>Fanontaniana, puzzle ary andininy</span></button>'+
   '<button class="big" id="vv" style="background:#7A5A0E"><b>Andininy</b><span>Mampahery, manitsy, torohevitra, finoana, fanantenana...</span></button>'+
   '<p class="mut">Isa tsara indrindra: ankizy '+(best.k||0)+' · olon-dehibe '+(best.a||0)+'</p><p class="foot">Ho voninahitr’Andriamanitra irery ihany</p>';
+  var ib=document.getElementById("inst");if(ib)ib.onclick=function(){DEFP.prompt();DEFP.userChoice.then(function(){DEFP=null;home()})};
   document.getElementById("k").onclick=kids;document.getElementById("a").onclick=adults;document.getElementById("vv").onclick=function(){VFROM="home";verses("Mampahery")};
 }
 function head(t,back){return '<div class="top"><button class="back" id="bk">‹ Miverina</button></div><h2>'+t+'</h2>'}
